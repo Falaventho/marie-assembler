@@ -15,6 +15,8 @@ buffer = "LOAD VALUE; testing a comment\nADD TWO\nSTORE RESULT\nHALT; testing a 
 # Split the buffer into chunks by line, removing blank lines
 buffer = re.split("\n+", buffer)
 
+# TODO strip whitespace from ends of chunks
+
 # Split each chunk into words by spaces or symbols as appropriate
 for idx, chunk in buffer.enumerate():
     line_end = chunk.find(";")
