@@ -44,14 +44,7 @@ def main():
         if line_end != -1:
             chunk = chunk[:line_end]
         chunk = chunk.strip()
-        words = re.split(" +", chunk)
-        if words[0] == "ORD":
-            if len(words) < 2:
-                raise Exception("ORD has no value on line " +
-                                f"{idx}: {' '.join(words)}")
-            memory_offset = int(words[1])
-        else:
-            buffer[idx] = words
+        buffer[idx] = re.split(" +", chunk)
 
     # Clean up empty lines
     cleaned_lines = [line for line in buffer if line != [""]]
@@ -67,9 +60,12 @@ def main():
         "OCT": lambda x: int(x, 8),
         "CHAR": lambda x: ord(x)
     }
+    directives = ["ORD"]
 
-    # First pass: collect labels and their addresses
-    for idx, line in enumerate(cleaned_lines):
+    # First pass: collect labels and their addresses - process directives
+    idx = 0
+    while idx < len(cleaned_lines):
+        line = cleaned_lines[idx]
         if line[0].endswith(","):
             label = line[0][:-1]
             symbols[label] = idx + memory_offset
@@ -79,6 +75,13 @@ def main():
                 raise Exception(f"Unsupported radix on line {idx}: {line[1]}")
 
             line[2] = radices[line[1]](line[2])
+
+        if line[0] in directives:
+            match line[0]:
+                case "ORD":
+                    memory_offset = int(line[1])
+            cleaned_lines.pop(idx)
+        idx += 1
 
     # Second pass: generate hex code
     hex_code = "" + ("0000" * memory_offset)
