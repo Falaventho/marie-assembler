@@ -63,7 +63,7 @@ def main():
         "OCT": lambda x: int(x, 8),
         "CHAR": lambda x: ord(x)
     }
-    directives = ["ORD"]
+    directives = ["ORG"]
 
     # First pass: collect labels and their addresses - process directives
     idx = 0
