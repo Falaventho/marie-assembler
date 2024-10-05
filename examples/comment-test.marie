@@ -1,0 +1,36 @@
+LOAD H       ; Load the value of H (72) into the AC (Accumulator)
+OUTPUT       ; Output the value in the AC (which is 72, representing 'H')
+LOAD E       ; Load the value of E (101) into the AC
+OUTPUT       ; Output the value in the AC (which is 101, representing 'E')
+LOAD L       ; Load the value of L (108) into the AC
+OUTPUT       ; Output the value in the AC (which is 108, representing 'L')
+OUTPUT       ; Output the value in the AC again (which is still 108, representing 'L')
+LOAD O       ; Load the value of O (111) into the AC
+OUTPUT       ; Output the value in the AC (which is 111, representing 'O')
+LOAD SPACE   ; Load the value of SPACE (32) into the AC
+OUTPUT       ; Output the value in the AC (which is 32, representing a space)
+LOAD W       ; Load the value of W (87) into the AC
+OUTPUT       ; Output the value in the AC (which is 87, representing 'W')
+LOAD O       ; Load the value of O (111) into the AC
+OUTPUT       ; Output the value in the AC (which is 111, representing 'O')
+LOAD R       ; Load the value of R (114) into the AC
+OUTPUT       ; Output the value in the AC (which is 114, representing 'R')
+LOAD L       ; Load the value of L (108) into the AC
+OUTPUT       ; Output the value in the AC (which is 108, representing 'L')
+LOAD D       ; Load the value of D (100) into the AC
+OUTPUT       ; Output the value in the AC (which is 100, representing 'D')
+LOAD EXC     ; Load the value of EXC (33) into the AC
+OUTPUT       ; Output the value in the AC (which is 33, representing '!')
+HALT         ; Halt the program
+
+;Testing empty line comment
+
+H, 72        ; Define the value of H as 72
+E, 101       ; Define the value of E as 101
+L, 108       ; Define the value of L as 108
+O, 111       ; Define the value of O as 111
+SPACE, 32    ; Define the value of SPACE as 32
+W, 87        ; Define the value of W as 87
+R, 114       ; Define the value of R as 114
+D, 100       ; Define the value of D as 100
+EXC, 33      ; Define the value of EXC as 33

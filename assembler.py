@@ -2,75 +2,63 @@ import re
 
 
 def main():
-    print("Hello, world!")
+    # Take a file path as input
+    source_path = input("Enter the source file path: ")
+    target_path = input("Enter the target file path: ")
 
-# TODO Take a file path as input
+    # Read the file into a buffer
+    with open(source_path, 'r') as file:
+        buffer = file.read()
 
-# TODO Read the file into a buffer
+    # Split the buffer into chunks by line, removing blank lines and stripping whitespace
+    buffer = re.split("\n+", buffer)
+    buffer = [line.strip() for line in buffer]
 
+    # Split each chunk into words by spaces or symbols as appropriate
+    for idx in range(len(buffer)):
+        chunk = buffer[idx]
+        line_end = chunk.find(";")
+        if line_end != -1:
+            chunk = chunk[:line_end]
+        chunk = chunk.strip()
+        buffer[idx] = re.split(" +", chunk)
 
-# Placeholder buffer for working
-buffer = "LOAD VALUE; testing a comment\nADD TWO\nSTORE RESULT\nHALT; testing a comment\n\nVALUE, 5\nTWO, 2\n RESULT, 0"
+    # Clean up empty lines
+    cleaned_lines = [line for line in buffer if line != [""]]
 
-# Split the buffer into chunks by line, removing blank lines
-buffer = re.split("\n+", buffer)
+    # Create a symbol table that stores labels and addr
+    symbols = {}
+    instructions = ["JNS", "LOAD", "STORE", "ADD", "SUBT", "INPUT", "OUTPUT",
+                    "HALT", "SKIPCOND", "JUMP", "CLEAR", "ADDI", "JUMPI", "LOADI", "STOREI"]
 
-# TODO strip whitespace from ends of chunks
+    # First pass: collect labels and their addresses
+    for idx, line in enumerate(cleaned_lines):
+        if line[0].endswith(","):
+            label = line[0][:-1]
+            symbols[label] = idx
+            cleaned_lines[idx][0] = label
 
-# Split each chunk into words by spaces or symbols as appropriate
-for idx, chunk in buffer.enumerate():
-    line_end = chunk.find(";")
-    if line_end != -1:
-        chunk = chunk[:line_end]
-    buffer[idx] = re.split(" +", chunk)
+    # Second pass: generate hex code
+    hex_code = ""
+    for line in cleaned_lines:
+        if line[0] in instructions:
+            opcode = instructions.index(line[0])
+            operand = 0
+            if len(line) > 1:
+                if line[1] in symbols:
+                    operand = symbols[line[1]]
+                else:
+                    operand = int(line[1])
+            hex_line = (opcode << 12) | operand
+            hex_code += f"{hex_line:04X}"
+        elif line[0] in symbols:
+            operand = int(line[1])
+            hex_code += f"{operand:04X}"
 
-
-# Clean up empty lines and commented out code.
-cleaned_lines = []
-for chunk in buffer:
-    if chunk == [""]:
-        continue
-    cleaned_lines.append(chunk)
-
-# TODO Create a symbol table that stores labels and associated addresses (line numbers + start_addr)
-symbols = {
-    "START": 0
-}
-
-# enum Instruction {
-#     JnS(i16),
-#     Load(i16),
-#     Store(i16),
-#     Add(i16),
-#     Subt(i16),
-#     Input,
-#     Output,
-#     Halt,
-#     Skipcond(i16),
-#     Jump(i16),
-#     Clear,
-#     AddI(i16),
-#     JumpI(i16),
-#     LoadI(i16),
-#     StoreI(i16),
-# }
-
-instructions = ["JNS", "LOAD", "STORE", "ADD", "SUBT", "INPUT", "OUTPUT",
-                "HALT", "SKIPCOND", "JUMP", "CLEAR", "ADDI", "JUMPI", "LOADI", "STOREI"]
-
-for idx, chunk in cleaned_lines.enumerate():
-    if chunk[0] in instructions:
-        continue
-    if chunk[0][-1] == ",":
-        symbol = chunk[0][:-1]
-        symbols[symbol] = idx
-    else:
-        raise Exception("Unrecognized instruction on line" +
-                        f"{idx}: {' '.join(chunk)}")
+    # Output the final hex string to file
+    with open(target_path, 'w+') as f:
+        f.write(hex_code)
 
 
-# TODO Convert instructions into opcodes, folding with attached values if applicable
-
-# TODO Convert symbols into appropriate addresses
-
-# TODO Output a hex string of the final buffer
+if __name__ == "__main__":
+    main()
