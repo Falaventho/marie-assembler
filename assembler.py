@@ -27,6 +27,7 @@ def helpexit():
 def main():
 
     source_path, target_path = parseargs()
+    memory_offset = 0
 
     # Read the file into a buffer
     with open(source_path, 'r') as file:
@@ -43,7 +44,14 @@ def main():
         if line_end != -1:
             chunk = chunk[:line_end]
         chunk = chunk.strip()
-        buffer[idx] = re.split(" +", chunk)
+        words = re.split(" +", chunk)
+        if words[0] == "ORD":
+            if len(words) < 2:
+                raise Exception("ORD has no value on line " +
+                                f"{idx}: {' '.join(words)}")
+            memory_offset = int(words[1])
+        else:
+            buffer[idx] = words
 
     # Clean up empty lines
     cleaned_lines = [line for line in buffer if line != [""]]
@@ -64,7 +72,7 @@ def main():
     for idx, line in enumerate(cleaned_lines):
         if line[0].endswith(","):
             label = line[0][:-1]
-            symbols[label] = idx
+            symbols[label] = idx + memory_offset
             cleaned_lines[idx][0] = label
 
             if line[1] not in radices:
@@ -73,7 +81,7 @@ def main():
             line[2] = radices[line[1]](line[2])
 
     # Second pass: generate hex code
-    hex_code = ""
+    hex_code = "" + ("0000" * memory_offset)
     for line in cleaned_lines:
         if line[0] in instructions:
             opcode = instructions.index(line[0])
