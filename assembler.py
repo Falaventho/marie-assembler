@@ -48,10 +48,16 @@ def main():
     # Clean up empty lines
     cleaned_lines = [line for line in buffer if line != [""]]
 
-    # Create a symbol table that stores labels and addr
+    # Reference collections
     symbols = {}
     instructions = ["JNS", "LOAD", "STORE", "ADD", "SUBT", "INPUT", "OUTPUT",
                     "HALT", "SKIPCOND", "JUMP", "CLEAR", "ADDI", "JUMPI", "LOADI", "STOREI"]
+    radices = {
+        "DEC": lambda x: int(x),
+        "HEX": lambda x: int(x, 16),
+        "BIN": lambda x: int(x, 2),
+        "OCT": lambda x: int(x, 8),
+    }
 
     # First pass: collect labels and their addresses
     for idx, line in enumerate(cleaned_lines):
@@ -59,6 +65,11 @@ def main():
             label = line[0][:-1]
             symbols[label] = idx
             cleaned_lines[idx][0] = label
+
+            if line[1] not in radices:
+                raise Exception(f"Unsupported radix on line {idx}: {line[1]}")
+
+            line[2] = radices[line[1]](line[2])
 
     # Second pass: generate hex code
     hex_code = ""
@@ -74,7 +85,7 @@ def main():
             hex_line = (opcode << 12) | operand
             hex_code += f"{hex_line:04X}"
         elif line[0] in symbols:
-            operand = int(line[1])
+            operand = line[2]
             hex_code += f"{operand:04X}"
 
     # Convert hex to bytes
