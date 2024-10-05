@@ -16,17 +16,20 @@ def parseargs():
     else:
         target_path = sys.argv[2] + ".ROM"
 
-    return (source_path, target_path)
+    debug = "--debug" in sys.argv
+
+    return (source_path, target_path, debug)
 
 
 def helpexit():
-    print("Usage: python assembler.py <source file path> <target file path>.")
+    print(
+        "Usage: python assembler.py <source file path> <target file path> [--debug].")
     exit()
 
 
 def main():
 
-    source_path, target_path = parseargs()
+    source_path, target_path, debug = parseargs()
     memory_offset = 0
 
     # Read the file into a buffer
@@ -78,7 +81,7 @@ def main():
 
         if line[0] in directives:
             match line[0]:
-                case "ORD":
+                case "ORG":
                     memory_offset = int(line[1])
             cleaned_lines.pop(idx)
         idx += 1
@@ -96,9 +99,15 @@ def main():
                     operand = int(line[1])
             hex_line = (opcode << 12) | operand
             hex_code += f"{hex_line:04X}"
+            if debug:
+                print(f"Instruction: {line[0]}, Operand: {
+                      operand}, Hex: {hex_line:04X}")
         elif line[0] in symbols:
             operand = line[2]
             hex_code += f"{operand:04X}"
+            if debug:
+                print(f"Label: {line[0]}, Operand: {
+                      operand}, Hex: {operand:04X}")
 
     # Convert hex to bytes
     binary_dat = bytes.fromhex(hex_code)
@@ -106,6 +115,9 @@ def main():
     # Output the binary data
     with open(target_path, 'wb') as f:
         f.write(binary_dat)
+
+    if debug:
+        print(f"Final Hex Code: {hex_code}")
 
 
 if __name__ == "__main__":
