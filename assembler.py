@@ -63,8 +63,8 @@ for idx, chunk in cleaned_lines.enumerate():
         symbol = chunk[0][:-1]
         symbols[symbol] = idx
     else:
-        raise Exception(f"Unrecognized instruction on line" +
-                        f"{idx}: {chunk.join(" ")}")
+        raise Exception("Unrecognized instruction on line" +
+                        f"{idx}: {' '.join(chunk)}")
 
 
 # TODO Convert instructions into opcodes, folding with attached values if applicable
