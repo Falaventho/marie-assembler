@@ -1,10 +1,32 @@
 import re
+import sys
+
+
+def parseargs():
+    if len(sys.argv) < 2:
+        helpexit()
+
+    source_path = sys.argv[1]
+
+    if source_path == "help" or source_path == "-h":
+        helpexit()
+
+    if len(sys.argv) == 2:
+        target_path = "program.out"
+    else:
+        target_path = sys.argv[2]
+
+    return (source_path, target_path)
+
+
+def helpexit():
+    print("Usage: python assembler.py <source file path> <target file path>.")
+    exit()
 
 
 def main():
-    # Take a file path as input
-    source_path = input("Enter the source file path: ")
-    target_path = input("Enter the target file path: ")
+
+    source_path, target_path = parseargs()
 
     # Read the file into a buffer
     with open(source_path, 'r') as file:
@@ -55,9 +77,12 @@ def main():
             operand = int(line[1])
             hex_code += f"{operand:04X}"
 
-    # Output the final hex string to file
-    with open(target_path, 'w+') as f:
-        f.write(hex_code)
+    # Convert hex to bytes
+    binary_dat = bytes.fromhex(hex_code)
+
+    # Output the binary data
+    with open(target_path, 'wb') as f:
+        f.write(binary_dat)
 
 
 if __name__ == "__main__":
