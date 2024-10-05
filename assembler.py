@@ -57,6 +57,7 @@ def main():
         "HEX": lambda x: int(x, 16),
         "BIN": lambda x: int(x, 2),
         "OCT": lambda x: int(x, 8),
+        "CHAR": lambda x: ord(x)
     }
 
     # First pass: collect labels and their addresses
