@@ -1,1 +1,4 @@
 .venv
+/workspace
+MARIE.ROM
+*.diff
