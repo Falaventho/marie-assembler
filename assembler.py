@@ -72,12 +72,12 @@ def main():
         if line[0].endswith(","):
             label = line[0][:-1]
             symbols[label] = idx + memory_offset
-            cleaned_lines[idx][0] = label
+            cleaned_lines[idx] = line[1:]
 
-            if line[1] not in radices:
-                raise Exception(f"Unsupported radix on line {idx}: {line[1]}")
+            # if line[1] not in radices:
+            #     raise Exception(f"Unsupported radix on line {idx}: {line[1]}")
 
-            line[2] = radices[line[1]](line[2])
+            # line[2] = radices[line[1]](line[2])
 
         if line[0] in directives:
             match line[0]:
@@ -96,18 +96,22 @@ def main():
                 if line[1] in symbols:
                     operand = symbols[line[1]]
                 else:
-                    operand = int(line[1])
+                    operand = int(line[1], 16)
+
             hex_line = (opcode << 12) | operand
             hex_code += f"{hex_line:04X}"
             if debug:
-                print(f"Instruction: {line[0]}, Operand: {
-                      operand}, Hex: {hex_line:04X}")
-        elif line[0] in symbols:
-            operand = line[2]
-            hex_code += f"{operand:04X}"
-            if debug:
-                print(f"Label: {line[0]}, Operand: {
-                      operand}, Hex: {operand:04X}")
+                print(f"Instruction: {line[0]}, Operand: " +
+                      f"{operand}, Hex: {hex_line:04X}")
+        elif line[0] in radices:
+            value = radices[line[0]](line[1])
+            hex_code += f"{value:04X}"
+        else:
+            raise Exception(f"Unidentified symbol found in {line}")
+
+         # Add debug print for SKIPCOND
+        if line[0] == "SKIPCOND":
+            print(f"SKIPCOND Operand: {operand:04X}")
 
     # Convert hex to bytes
     binary_dat = bytes.fromhex(hex_code)
