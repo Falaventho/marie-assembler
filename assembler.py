@@ -12,9 +12,9 @@ def parseargs():
         helpexit()
 
     if len(sys.argv) == 2:
-        target_path = "program.out"
+        target_path = "MARIE.rom"
     else:
-        target_path = sys.argv[2]
+        target_path = sys.argv[2] + ".rom"
 
     return (source_path, target_path)
 
