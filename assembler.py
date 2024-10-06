@@ -109,10 +109,6 @@ def main():
         else:
             raise Exception(f"Unidentified symbol found in {line}")
 
-         # Add debug print for SKIPCOND
-        if line[0] == "SKIPCOND":
-            print(f"SKIPCOND Operand: {operand:04X}")
-
     # Convert hex to bytes
     binary_dat = bytes.fromhex(hex_code)
 
